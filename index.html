@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Game</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          text-align: center;
+          background: #2e2e2e;
+          color: white;
+          padding: 20px;
+        }
+        h1 {
+          margin-bottom: 10px;
+        }
+        .cards {
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+          margin-top: 30px;
+        }
+        .card {
+          width: 100px;
+          height: 150px;
+          cursor: pointer;
+          transition: transform 0.3s;
+        }
+        .card:hover {
+          transform: scale(1.05);
+        }
+        #score {
+          font-size: 20px;
+          margin-top: 20px;
+        }
+        img {
+          width: 100%;
+          height: 100%;
+          border-radius: 10px;
+          border: 2px solid #fff;
+        }
+        #winmessage{
+            color: green;
+            font-size: 40px;
+        }
+      </style>
+</head>
+<body>
+    <h1>Card Game</h1>
+    <div id="score">Score: 0</div>
+    <div id="winmessage"></div>
+    <div class="cards">
+      <div class="card" onclick="getRandomCardImage(this)">
+        <img src="cards/back_cover.jpg" alt="Card Back">
+      </div>
+      <div class="card" onclick="getRandomCardImage(this)">
+        <img src="cards/back_cover.jpg" alt="Card Back">
+      </div>
+      <div class="card" onclick="getRandomCardImage(this)">
+        <img src="cards/back_cover.jpg" alt="Card Back">
+      </div>
+    </div>
+    
+    <script>
+       let score = 0;
+let isClickable = true; // fixed typo here
+
+let cardImages = {
+    king: "http://127.0.0.1:5500/cards/k.jpg",
+    queen: "http://127.0.0.1:5500/cards/q.jpg",
+    jack: "http://127.0.0.1:5500/cards/j.jpg"
+};
+
+let backImage = "http://127.0.0.1:5500/cards/back_cover.jpg"; 
+
+function getRandomCardImage(cardElement) {
+    if (!isClickable) return;
+
+    isClickable = false;
+    const cards = ["king", "queen", "jack"];
+    const randomIndex = Math.floor(Math.random() * cards.length);
+    const selectedCard = cards[randomIndex]; 
+    const imageElement = cardElement.querySelector("img");
+    imageElement.src = cardImages[selectedCard];
+
+    if (selectedCard === "king") {
+        score += 10;
+    } else if (selectedCard === "jack") {
+        score -= 5;
+    }
+    if (score >= 50) {
+        document.getElementById("winmessage").textContent = "You Won: " + score;
+    } 
+    document.getElementById("score").textContent = "Score: " + score;
+
+   
+   
+
+    setTimeout(() => {
+        resetCards();
+        isClickable = true;
+    }, 1000); // 5 seconds
+}
+
+function resetCards() {
+    const allCards = document.querySelectorAll(".card img");
+    allCards.forEach(img => {
+        img.src = backImage;
+    });
+}
+
+    </script>
+</body>
+</html>
