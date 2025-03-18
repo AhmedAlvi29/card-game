@@ -49,6 +49,8 @@
 <body>
     <h1>Card Game</h1>
     <div id="score">Score: 0</div>
+    <p id="cardsLeft">Cards Left: 10</p>
+
     <div id="winmessage"></div>
     <div class="cards">
       <div class="card" onclick="getRandomCardImage(this)">
@@ -62,53 +64,78 @@
       </div>
     </div>
     
-    <script>
-       let score = 0;
-let isClickable = true; // fixed typo here
-
-let cardImages = {
-    king: "http://127.0.0.1:5500/cards/k.jpg",
-    queen: "http://127.0.0.1:5500/cards/q.jpg",
-    jack: "http://127.0.0.1:5500/cards/j.jpg"
-};
-
-let backImage = "http://127.0.0.1:5500/cards/back_cover.jpg"; 
-
-function getRandomCardImage(cardElement) {
-    if (!isClickable) return;
-
-    isClickable = false;
-    const cards = ["king", "queen", "jack"];
-    const randomIndex = Math.floor(Math.random() * cards.length);
-    const selectedCard = cards[randomIndex]; 
-    const imageElement = cardElement.querySelector("img");
-    imageElement.src = cardImages[selectedCard];
-
-    if (selectedCard === "king") {
-        score += 10;
-    } else if (selectedCard === "jack") {
-        score -= 5;
-    }
-    if (score >= 50) {
-        document.getElementById("winmessage").textContent = "You Won: " + score;
-    } 
-    document.getElementById("score").textContent = "Score: " + score;
-
-   
-   
-
-    setTimeout(() => {
-        resetCards();
-        isClickable = true;
-    }, 1000); // 5 seconds
-}
-
-function resetCards() {
-    const allCards = document.querySelectorAll(".card img");
-    allCards.forEach(img => {
-        img.src = backImage;
-    });
-}
+    <script>let score = 0;
+      let isClickable = true;
+      let flips = 0; // Tracks number of flips
+      const maxFlips = 10;
+      
+      const cardImages = {
+          king: "http://127.0.0.1:5500/cards/k.jpg",
+          queen: "http://127.0.0.1:5500/cards/q.jpg",
+          jack: "http://127.0.0.1:5500/cards/j.jpg"
+      };
+      
+      const backImage = "http://127.0.0.1:5500/cards/back_cover.jpg";
+      
+      const cardValues = {
+          king: 10,
+          queen: 5,
+          jack: -10
+      };
+      
+      function getRandomCardImage(cardElement) {
+          if (!isClickable) return;
+          if (flips >= maxFlips) return; // Prevent extra flips after 8
+      
+          isClickable = false;
+          const cards = Object.keys(cardImages);
+          const randomIndex = Math.floor(Math.random() * cards.length);
+          const selectedCard = cards[randomIndex]; 
+          const imageElement = cardElement.querySelector("img");
+          imageElement.src = cardImages[selectedCard];
+      
+          score += cardValues[selectedCard];
+          flips++; // Increment flip count
+      
+          document.getElementById("score").textContent = `Score: ${score}`;
+          document.getElementById("cardsLeft").textContent = `Cards Left: ${maxFlips - flips}`;
+      
+          setTimeout(() => {
+              resetCards();
+              isClickable = true;
+      
+              // Check for win/lose condition after 8 flips
+              if (flips === maxFlips) {
+                  if (score >= 50) {
+                      document.getElementById("winmessage").textContent = `You Won: ${score}`;
+                  } else {
+                      document.getElementById("winmessage").textContent = `You Lost! Final Score: ${score}`;
+                  }
+      
+                  // Reset everything after a short delay to show message
+                  setTimeout(() => {
+                      resetGame();
+                  }, 2000); // 2 seconds delay before reset
+              }
+          }, 1000);
+      }
+      
+      function resetCards() {
+          const allCards = document.querySelectorAll(".card img");
+          allCards.forEach(img => {
+              img.src = backImage;
+          });
+      }
+      
+      function resetGame() {
+          score = 0;
+          flips = 0;
+          document.getElementById("score").textContent = `Score: ${score}`;
+          document.getElementById("cardsLeft").textContent = `Cards Left: ${maxFlips}`;
+          document.getElementById("winmessage").textContent = "";
+          resetCards();
+      }
+      
 
     </script>
 </body>
