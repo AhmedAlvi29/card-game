@@ -1,149 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Card Game</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        background: #2e2e2e;
-        color: white;
-        padding: 20px;
-      }
-      h1 {
-        margin-bottom: 10px;
-      }
-      .cards {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 30px;
-      }
-      .card {
-        width: 100px;
-        height: 150px;
-        cursor: pointer;
-        transition: transform 0.3s;
-      }
-      .card:hover {
-        transform: scale(1.05);
-      }
-      #score {
-        font-size: 20px;
-        margin-top: 20px;
-      }
-      img {
-        width: 100%;
-        height: 100%;
-        border-radius: 10px;
-        border: 2px solid #fff;
-      }
-      #winmessage {
-        color: green;
-        font-size: 40px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Card Game</h1>
-    <div id="score">Score: 0</div>
-    <p id="cardsLeft">Cards Left: 10</p>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Card Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #2e2e2e;
+      color: white;
+      padding: 20px;
+    }
+    h1 { margin-bottom: 10px; }
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .card {
+      width: 100px;
+      height: 150px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .card:hover { transform: scale(1.05); }
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      border: 2px solid #fff;
+    }
+    #score { font-size: 20px; margin-top: 20px; }
+    #winmessage { color: green; font-size: 40px; margin-top: 20px; }
+  </style>
+</head>
+<body>
 
-    <div id="winmessage"></div>
-    <div class="cards">
-      <div class="card" onclick="getRandomCardImage(this)">
-        <img src="cards/back_cover.jpg" alt="Card Back" />
-      </div>
-      <div class="card" onclick="getRandomCardImage(this)">
-        <img src="cards/back_cover.jpg" alt="Card Back" />
-      </div>
-      <div class="card" onclick="getRandomCardImage(this)">
-        <img src="cards/back_cover.jpg" alt="Card Back" />
-      </div>
+  <h1>Card Game</h1>
+  <div id="score">Score: 0</div>
+  <p id="cardsLeft">Cards Left: 10</p>
+  <div id="winmessage"></div>
+
+  <!-- Three clickable card elements -->
+  <div class="cards">
+    <div class="card" onclick="handleCardClick(this)">
+      <img src="https://saylani-project-card-game.netlify.app/cards/back_cover.jpg" alt="Card Back" />
     </div>
+    <div class="card" onclick="handleCardClick(this)">
+      <img src="https://saylani-project-card-game.netlify.app/cards/back_cover.jpg" alt="Card Back" />
+    </div>
+    <div class="card" onclick="handleCardClick(this)">
+      <img src="https://saylani-project-card-game.netlify.app/cards/back_cover.jpg" alt="Card Back" />
+    </div>
+  </div>
 
-    <script>
-      let score = 0;
-      let flips = 0;
-      const maxFlips = 10;
-      let isClickable = true;
+  <script>
+    // set score and flip counts
+    let score = 0;
+    let flips = 0;
+    const maxFlips = 10;
+    let canClick = true; 
 
-      const cardImages = {
-        king: "https://saylani-project-card-game.netlify.app/cards/k.jpg",
-        queen: "https://saylani-project-card-game.netlify.app/cards/q.jpg",
-        jack: "https://saylani-project-card-game.netlify.app/cards/j.jpg",
-      };
+    // store URL of  images and their score values
+    const cardImages = {
+      king: "https://saylani-project-card-game.netlify.app/cards/k.jpg",
+      queen: "https://saylani-project-card-game.netlify.app/cards/q.jpg",
+      jack: "https://saylani-project-card-game.netlify.app/cards/j.jpg"
+    };
 
-      const cardValues = {
-        king: 10,
-        queen: 5,
-        jack: -10,
-      };
+    const cardPoints = {
+      king: 10,
+      queen: 5,
+      jack: -10
+    };
 
-      const backImage =
-        "https://saylani-project-card-game.netlify.app/cards/back_cover.jpg";
+    const cardBackImage = "https://saylani-project-card-game.netlify.app/cards/back_cover.jpg";
 
-      function getRandomCardName() {
-        const cardNames = Object.keys(cardImages);
-        return cardNames[Math.floor(Math.random() * cardNames.length)];
-      }
+    // Create function to get a random card name
+    function getRandomCard() {
+      const cardNames = Object.keys(cardImages); 
+      const randomIndex = Math.floor(Math.random() * cardNames.length);
+      return cardNames[randomIndex];
+    }
 
-      function onCardClick(clickedCardElement) {
-        if (!isClickable || flips >= maxFlips) return;
-        isClickable = false;
+    // Function called when any card is clicked i recived in this function one prmeter to understand which card user clicked
+    function handleCardClick(clickedCardDiv) {
+      if (!canClick || flips >= maxFlips) return; // Function Stop if already clicked or flips done
+      canClick = false;
 
-        const allCards = document.querySelectorAll(".card img");
-        const cardNames = [];
+      const allCardImages = document.querySelectorAll(".card img");
+      const randomCards = []; 
 
-        allCards.forEach((cardImg) => {
-          const randomCard = getRandomCardName();
-          cardImg.src = cardImages[randomCard];
-          cardNames.push(randomCard);
-        });
+      // Showing random cards for all 3 cards this loop repeted for 3 times because we have three images
+      allCardImages.forEach((img) => {
+        const cardName = getRandomCard();
+        img.src = cardImages[cardName]; 
+        randomCards.push(cardName);
+      });
 
-        const clickedIndex = Array.from(allCards).indexOf(
-          clickedCardElement.querySelector("img")
-        );
-        const clickedCardName = cardNames[clickedIndex];
+      
+      const clickedIndex = Array.from(allCardImages).indexOf(clickedCardDiv.querySelector("img"));
+      const clickedCardName = randomCards[clickedIndex];
 
-        score += cardValues[clickedCardName];
-        flips++;
+      //  this is Update score and flips of user
+      score += cardPoints[clickedCardName];
+      flips++;
 
-        document.getElementById("score").textContent = `Score: ${score}`;
-        document.getElementById("cardsLeft").textContent = `Cards Left: ${
-          maxFlips - flips
-        }`;
+      // This Update text display score and left flips
+      document.getElementById("score").textContent = `Score: ${score}`;
+      document.getElementById("cardsLeft").textContent = `Cards Left: ${maxFlips - flips}`;
 
-        setTimeout(() => {
-          allCards.forEach((cardImg) => (cardImg.src = backImage));
-          isClickable = true;
+      // This is restriction Wait for 2 seconds, then flip cards back and allow next click
+      setTimeout(() => {
+        allCardImages.forEach(img => img.src = cardBackImage);
+        // if this is true user can flips but is not true user cannot flip cards
+        canClick = true;
 
-          if (flips === maxFlips) {
-            const resultText =
-              score >= 50
-                ? `You Won: ${score}`
-                : `You Lost! Final Score: ${score}`;
-            document.getElementById("winmessage").textContent = resultText;
+        // If Game over this condition applying if user reach 50 score so user won if not user lose
+        if (flips === maxFlips) {
+          const message = score >= 50 ? `You Won: ${score}` : `You Lost! Final Score: ${score}`;
+          document.getElementById("winmessage").textContent = message;
 
-            setTimeout(resetGame, 2000);
-          }
-        }, 2000);
-      }
+          // This is if game over after game over 2 sec wait and then reset game state resetgame function call
+          setTimeout(resetGame, 2000);
+        }
+      }, 2000);
+    }
 
-      function resetGame() {
-        score = 0;
-        flips = 0;
-        document.getElementById("score").textContent = `Score: 0`;
-        document.getElementById(
-          "cardsLeft"
-        ).textContent = `Cards Left: ${maxFlips}`;
-        document.getElementById("winmessage").textContent = "";
+    // Reset function create for reset everything to starting state
+    function resetGame() {
+      score = 0;
+      flips = 0;
+      canClick = true;
+      document.getElementById("score").textContent = "Score: 0";
+      document.getElementById("cardsLeft").textContent = `Cards Left: ${maxFlips}`;
+      document.getElementById("winmessage").textContent = "";
 
-        const allCards = document.querySelectorAll(".card img");
-        allCards.forEach((cardImg) => (cardImg.src = backImage));
-      }
-    </script>
-  </body>
+      const allCardImages = document.querySelectorAll(".card img");
+      allCardImages.forEach(img => img.src = cardBackImage);
+    }
+  </script>
+
+</body>
 </html>
