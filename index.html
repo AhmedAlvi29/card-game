@@ -57,90 +57,97 @@
   </div>
 
   <script>
-    // set score and flip counts
-    let score = 0;
-    let flips = 0;
-    const maxFlips = 10;
-    let canClick = true; 
+  // set score and flip counts
+let score = 0;
+let flips = 0;
+const maxFlips = 10;
+let canClick = true; 
 
-    // store URL of  images and their score values
-    const cardImages = {
-      king: "https://saylani-project-card-game.netlify.app/cards/k.jpg",
-      queen: "https://saylani-project-card-game.netlify.app/cards/q.jpg",
-      jack: "https://saylani-project-card-game.netlify.app/cards/j.jpg"
-    };
+// store URL of  images and their score values
+const cardImages = {
+  king: "https://saylani-project-card-game.netlify.app/cards/k.jpg",
+  queen: "https://saylani-project-card-game.netlify.app/cards/q.jpg",
+  jack: "https://saylani-project-card-game.netlify.app/cards/j.jpg"
+};
 
-    const cardPoints = {
-      king: 10,
-      queen: 5,
-      jack: -10
-    };
+const cardPoints = {
+  king: 10,
+  queen: 5,
+  jack: 10
+};
 
-    const cardBackImage = "https://saylani-project-card-game.netlify.app/cards/back_cover.jpg";
+const cardBackImage = "https://saylani-project-card-game.netlify.app/cards/back_cover.jpg";
 
-    // Create function to get a random card name
-    function getRandomCard() {
-      const cardNames = Object.keys(cardImages); 
-      const randomIndex = Math.floor(Math.random() * cardNames.length);
-      return cardNames[randomIndex];
+// Create function to get a random card name
+function getRandomCard() {
+  const cardNames = Object.keys(cardImages); 
+  const randomIndex = Math.floor(Math.random() * cardNames.length);
+  return cardNames[randomIndex];
+}
+
+// Create function to get 3 unique card 
+function getThreeUniqueCards() {
+  const cardNames = Object.keys(cardImages); 
+  const shuffled = cardNames.sort(() => 0.5 - Math.random()); 
+  return shuffled.slice(0, 3); // This can Take only first 3 unique cards
+}
+
+// Function called when any card is clicked i recived in this function one prmeter to understand which card user clicked
+function handleCardClick(clickedCardDiv) {
+  if (!canClick || flips >= maxFlips) return; // Function Stop if already clicked or flips done
+  canClick = false;
+
+  const allCardImages = document.querySelectorAll(".card img");
+  const randomCards = getThreeUniqueCards(); // Get 3 unique cards
+
+  // Showing random cards for all 3 cards this loop repeted for 3 times because we have three images
+  allCardImages.forEach((img, index) => {
+    const cardName = randomCards[index]; // Get card for this position
+    img.src = cardImages[cardName]; 
+  });
+
+  const clickedIndex = Array.from(allCardImages).indexOf(clickedCardDiv.querySelector("img"));
+  const clickedCardName = randomCards[clickedIndex];
+
+  //  this is Update score and flips of user
+  score += cardPoints[clickedCardName];
+  flips++;
+
+  // This Update text display score and left flips
+  document.getElementById("score").textContent = `Score: ${score}`;
+  document.getElementById("cardsLeft").textContent = `Cards Left: ${maxFlips - flips}`;
+
+  // This is restriction Wait for 2 seconds, then flip cards back and allow next click
+  setTimeout(() => {
+    allCardImages.forEach(img => img.src = cardBackImage);
+    // if this is true user can flips but is not true user cannot flip cards
+    canClick = true;
+
+    // If Game over this condition applying if user reach 50 score so user won if not user lose
+    if (flips === maxFlips || score >= 50) {
+      const isGameWon = score >= 50;
+      const message = isGameWon ? `You Won: ${score}` : `You Lost! Final Score: ${score}`;
+      document.getElementById("winmessage").textContent = message;
+      document.getElementById("winmessage").style.color = isGameWon ? "green" : "red";
+
+      setTimeout(resetGame, 2000);
     }
+  }, 3000);
+}
 
-    // Function called when any card is clicked i recived in this function one prmeter to understand which card user clicked
-    function handleCardClick(clickedCardDiv) {
-      if (!canClick || flips >= maxFlips) return; // Function Stop if already clicked or flips done
-      canClick = false;
+// Reset function create for reset everything to starting state
+function resetGame() {
+  score = 0;
+  flips = 0;
+  canClick = true;
+  document.getElementById("score").textContent = "Score: 0";
+  document.getElementById("cardsLeft").textContent = `Cards Left: ${maxFlips}`;
+  document.getElementById("winmessage").textContent = "";
 
-      const allCardImages = document.querySelectorAll(".card img");
-      const randomCards = []; 
+  const allCardImages = document.querySelectorAll(".card img");
+  allCardImages.forEach(img => img.src = cardBackImage);
+}
 
-      // Showing random cards for all 3 cards this loop repeted for 3 times because we have three images
-      allCardImages.forEach((img) => {
-        const cardName = getRandomCard();
-        img.src = cardImages[cardName]; 
-        randomCards.push(cardName);
-      });
-
-      
-      const clickedIndex = Array.from(allCardImages).indexOf(clickedCardDiv.querySelector("img"));
-      const clickedCardName = randomCards[clickedIndex];
-
-      //  this is Update score and flips of user
-      score += cardPoints[clickedCardName];
-      flips++;
-
-      // This Update text display score and left flips
-      document.getElementById("score").textContent = `Score: ${score}`;
-      document.getElementById("cardsLeft").textContent = `Cards Left: ${maxFlips - flips}`;
-
-      // This is restriction Wait for 2 seconds, then flip cards back and allow next click
-      setTimeout(() => {
-        allCardImages.forEach(img => img.src = cardBackImage);
-        // if this is true user can flips but is not true user cannot flip cards
-        canClick = true;
-
-        // If Game over this condition applying if user reach 50 score so user won if not user lose
-        if (flips === maxFlips) {
-          const message = score >= 50 ? `You Won: ${score}` : `You Lost! Final Score: ${score}`;
-          document.getElementById("winmessage").textContent = message;
-
-          // This is if game over after game over 2 sec wait and then reset game state resetgame function call
-          setTimeout(resetGame, 2000);
-        }
-      }, 3000);
-    }
-
-    // Reset function create for reset everything to starting state
-    function resetGame() {
-      score = 0;
-      flips = 0;
-      canClick = true;
-      document.getElementById("score").textContent = "Score: 0";
-      document.getElementById("cardsLeft").textContent = `Cards Left: ${maxFlips}`;
-      document.getElementById("winmessage").textContent = "";
-
-      const allCardImages = document.querySelectorAll(".card img");
-      allCardImages.forEach(img => img.src = cardBackImage);
-    }
   </script>
 
 </body>
