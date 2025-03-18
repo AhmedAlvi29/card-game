@@ -1,52 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Card Game</title>
     <style>
-        body {
-          font-family: Arial, sans-serif;
-          text-align: center;
-          background: #2e2e2e;
-          color: white;
-          padding: 20px;
-        }
-        h1 {
-          margin-bottom: 10px;
-        }
-        .cards {
-          display: flex;
-          justify-content: center;
-          gap: 20px;
-          margin-top: 30px;
-        }
-        .card {
-          width: 100px;
-          height: 150px;
-          cursor: pointer;
-          transition: transform 0.3s;
-        }
-        .card:hover {
-          transform: scale(1.05);
-        }
-        #score {
-          font-size: 20px;
-          margin-top: 20px;
-        }
-        img {
-          width: 100%;
-          height: 100%;
-          border-radius: 10px;
-          border: 2px solid #fff;
-        }
-        #winmessage{
-            color: green;
-            font-size: 40px;
-        }
-      </style>
-</head>
-<body>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #2e2e2e;
+        color: white;
+        padding: 20px;
+      }
+      h1 {
+        margin-bottom: 10px;
+      }
+      .cards {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+      }
+      .card {
+        width: 100px;
+        height: 150px;
+        cursor: pointer;
+        transition: transform 0.3s;
+      }
+      .card:hover {
+        transform: scale(1.05);
+      }
+      #score {
+        font-size: 20px;
+        margin-top: 20px;
+      }
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        border: 2px solid #fff;
+      }
+      #winmessage {
+        color: green;
+        font-size: 40px;
+      }
+    </style>
+  </head>
+  <body>
     <h1>Card Game</h1>
     <div id="score">Score: 0</div>
     <p id="cardsLeft">Cards Left: 10</p>
@@ -54,89 +54,96 @@
     <div id="winmessage"></div>
     <div class="cards">
       <div class="card" onclick="getRandomCardImage(this)">
-        <img src="cards/back_cover.jpg" alt="Card Back">
+        <img src="cards/back_cover.jpg" alt="Card Back" />
       </div>
       <div class="card" onclick="getRandomCardImage(this)">
-        <img src="cards/back_cover.jpg" alt="Card Back">
+        <img src="cards/back_cover.jpg" alt="Card Back" />
       </div>
       <div class="card" onclick="getRandomCardImage(this)">
-        <img src="cards/back_cover.jpg" alt="Card Back">
+        <img src="cards/back_cover.jpg" alt="Card Back" />
       </div>
     </div>
-    
-    <script>let score = 0;
-      let isClickable = true;
-      let flips = 0; // Tracks number of flips
-      const maxFlips = 10;
-      
-      const cardImages = {
-          king: "https://saylani-project-card-game.netlify.app/cards/k.jpg",
-          queen: "https://saylani-project-card-game.netlify.app/cards/q.jpg",
-          jack: "https://saylani-project-card-game.netlify.app/cards/j.jpg"
-      };
-      
-      const backImage = "https://saylani-project-card-game.netlify.app/cards/back_cover.jpg";
-      
-      const cardValues = {
-          king: 10,
-          queen: 5,
-          jack: -10
-      };
-      
-      function getRandomCardImage(cardElement) {
-          if (!isClickable) return;
-          if (flips >= maxFlips) return; // Prevent extra flips after 8
-      
-          isClickable = false;
-          const cards = Object.keys(cardImages);
-          const randomIndex = Math.floor(Math.random() * cards.length);
-          const selectedCard = cards[randomIndex]; 
-          const imageElement = cardElement.querySelector("img");
-          imageElement.src = cardImages[selectedCard];
-      
-          score += cardValues[selectedCard];
-          flips++; // Increment flip count
-      
-          document.getElementById("score").textContent = `Score: ${score}`;
-          document.getElementById("cardsLeft").textContent = `Cards Left: ${maxFlips - flips}`;
-      
-          setTimeout(() => {
-              resetCards();
-              isClickable = true;
-      
-              // Check for win/lose condition after 8 flips
-              if (flips === maxFlips) {
-                  if (score >= 50) {
-                      document.getElementById("winmessage").textContent = `You Won: ${score}`;
-                  } else {
-                      document.getElementById("winmessage").textContent = `You Lost! Final Score: ${score}`;
-                  }
-      
-                  // Reset everything after a short delay to show message
-                  setTimeout(() => {
-                      resetGame();
-                  }, 2000); // 2 seconds delay before reset
-              }
-          }, 2000);
-      }
-      
-      function resetCards() {
-          const allCards = document.querySelectorAll(".card img");
-          allCards.forEach(img => {
-              img.src = backImage;
-          });
-      }
-      
-      function resetGame() {
-          score = 0;
-          flips = 0;
-          document.getElementById("score").textContent = `Score: ${score}`;
-          document.getElementById("cardsLeft").textContent = `Cards Left: ${maxFlips}`;
-          document.getElementById("winmessage").textContent = "";
-          resetCards();
-      }
-      
 
+    <script>
+      let score = 0;
+      let flips = 0;
+      const maxFlips = 10;
+      let isClickable = true;
+
+      const cardImages = {
+        king: "https://saylani-project-card-game.netlify.app/cards/k.jpg",
+        queen: "https://saylani-project-card-game.netlify.app/cards/q.jpg",
+        jack: "https://saylani-project-card-game.netlify.app/cards/j.jpg",
+      };
+
+      const cardValues = {
+        king: 10,
+        queen: 5,
+        jack: -10,
+      };
+
+      const backImage =
+        "https://saylani-project-card-game.netlify.app/cards/back_cover.jpg";
+
+      function getRandomCardName() {
+        const cardNames = Object.keys(cardImages);
+        return cardNames[Math.floor(Math.random() * cardNames.length)];
+      }
+
+      function onCardClick(clickedCardElement) {
+        if (!isClickable || flips >= maxFlips) return;
+        isClickable = false;
+
+        const allCards = document.querySelectorAll(".card img");
+        const cardNames = [];
+
+        allCards.forEach((cardImg) => {
+          const randomCard = getRandomCardName();
+          cardImg.src = cardImages[randomCard];
+          cardNames.push(randomCard);
+        });
+
+        const clickedIndex = Array.from(allCards).indexOf(
+          clickedCardElement.querySelector("img")
+        );
+        const clickedCardName = cardNames[clickedIndex];
+
+        score += cardValues[clickedCardName];
+        flips++;
+
+        document.getElementById("score").textContent = `Score: ${score}`;
+        document.getElementById("cardsLeft").textContent = `Cards Left: ${
+          maxFlips - flips
+        }`;
+
+        setTimeout(() => {
+          allCards.forEach((cardImg) => (cardImg.src = backImage));
+          isClickable = true;
+
+          if (flips === maxFlips) {
+            const resultText =
+              score >= 50
+                ? `You Won: ${score}`
+                : `You Lost! Final Score: ${score}`;
+            document.getElementById("winmessage").textContent = resultText;
+
+            setTimeout(resetGame, 2000);
+          }
+        }, 2000);
+      }
+
+      function resetGame() {
+        score = 0;
+        flips = 0;
+        document.getElementById("score").textContent = `Score: 0`;
+        document.getElementById(
+          "cardsLeft"
+        ).textContent = `Cards Left: ${maxFlips}`;
+        document.getElementById("winmessage").textContent = "";
+
+        const allCards = document.querySelectorAll(".card img");
+        allCards.forEach((cardImg) => (cardImg.src = backImage));
+      }
     </script>
-</body>
+  </body>
 </html>
